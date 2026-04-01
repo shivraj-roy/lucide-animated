@@ -23,12 +23,38 @@ const REGISTRY_URL = "https://raw.githubusercontent.com/pqoqubbw/icons/main/regi
 const REGISTRY_BASE = "https://lucide-animated.com/r";
 
 const MISSING_ICONS = new Set([
-  "airplane", "align-center", "align-horizontal", "align-vertical",
-  "attach-file", "cart", "chrome", "circle-help", "clap", "connect",
-  "cursor-click", "discord", "downvote", "dribbble", "facebook", "figma",
-  "file-check-2", "fingerprint", "flask", "github", "home", "instagram",
-  "key-circle", "linkedin", "logout", "twitch", "twitter", "upvote",
-  "youtube", "gitlab", "align-left", "align-right",
+  "airplane",
+  "align-center",
+  "align-horizontal",
+  "align-vertical",
+  "attach-file",
+  "cart",
+  "chrome",
+  "circle-help",
+  "clap",
+  "connect",
+  "cursor-click",
+  "discord",
+  "downvote",
+  "dribbble",
+  "facebook",
+  "figma",
+  "file-check-2",
+  "fingerprint",
+  "flask",
+  "github",
+  "home",
+  "instagram",
+  "key-circle",
+  "linkedin",
+  "logout",
+  "twitch",
+  "twitter",
+  "upvote",
+  "youtube",
+  "gitlab",
+  "align-left",
+  "align-right",
 ]);
 
 function getIconSource(name: string): string {
@@ -57,7 +83,7 @@ function IconActions({ name, packageManager }: { name: string; packageManager: P
     <ActionPanel>
       <ActionPanel.Section>
         <Action
-          title="Copy .tsx Code"
+          title="Copy TSX Code"
           icon={Icon.Clipboard}
           onAction={async () => {
             if (!tsxSource) {
@@ -78,13 +104,13 @@ function IconActions({ name, packageManager }: { name: string; packageManager: P
           }}
         />
         <Action.OpenInBrowser
-          title="Open in v0"
+          title="Open in V0"
           icon={Icon.Globe}
           shortcut={{ modifiers: ["cmd"], key: "v" }}
           url={`https://v0.dev/chat?q=use+the+${name}+icon+from+lucide-animated`}
         />
         <Action.OpenInBrowser
-          title="Open on lucide-animated.com"
+          title="Open on Lucide Animated"
           icon={Icon.Globe}
           shortcut={{ modifiers: ["cmd"], key: "o" }}
           url="https://lucide-animated.com"
@@ -104,9 +130,7 @@ export default function Command() {
 
   const allIcons: string[] = [...new Set(registry?.items?.map((item) => item.name) ?? [])].sort();
 
-  const filteredIcons = searchText
-    ? allIcons.filter((name) => name.includes(searchText.toLowerCase()))
-    : allIcons;
+  const filteredIcons = searchText ? allIcons.filter((name) => name.includes(searchText.toLowerCase())) : allIcons;
 
   return (
     <Grid
