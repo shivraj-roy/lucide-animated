@@ -38,7 +38,16 @@ function getIconSource(name: string): string {
   return `https://lucide.dev/api/icons/${name}`;
 }
 
-function IconActions({ name }: { name: string }) {
+type PackageManager = "pnpm" | "npm" | "yarn" | "bun";
+
+const INSTALL_COMMANDS: Record<PackageManager, (name: string) => string> = {
+  pnpm: (name) => `pnpm dlx shadcn@latest add https://lucide-animated.com/r/${name}`,
+  npm: (name) => `npx shadcn@latest add https://lucide-animated.com/r/${name}`,
+  yarn: (name) => `yarn dlx shadcn@latest add https://lucide-animated.com/r/${name}`,
+  bun: (name) => `bunx --bun shadcn@latest add https://lucide-animated.com/r/${name}`,
+};
+
+function IconActions({ name, packageManager }: { name: string; packageManager: PackageManager }) {
   const { data } = useFetch<RegistryItem>(`${REGISTRY_BASE}/${name}.json`, {
     parseResponse: async (response) => response.json() as Promise<RegistryItem>,
   });
@@ -60,13 +69,12 @@ function IconActions({ name }: { name: string }) {
           }}
         />
         <Action
-          title="Copy shadcn/cli Command"
+          title={`Copy ${packageManager} Install Command`}
           icon={Icon.Terminal}
           shortcut={{ modifiers: ["cmd"], key: "s" }}
           onAction={async () => {
-            const cmd = `pnpm dlx shadcn@latest add https://lucide-animated.com/r/${name}`;
-            await Clipboard.copy(cmd);
-            await showToast({ style: Toast.Style.Success, title: "shadcn command copied!" });
+            await Clipboard.copy(INSTALL_COMMANDS[packageManager](name));
+            await showToast({ style: Toast.Style.Success, title: `${packageManager} command copied!` });
           }}
         />
         <Action.OpenInBrowser
@@ -88,6 +96,7 @@ function IconActions({ name }: { name: string }) {
 
 export default function Command() {
   const [searchText, setSearchText] = useState("");
+  const [packageManager, setPackageManager] = useState<PackageManager>("pnpm");
 
   const { data: registry, isLoading: registryLoading } = useFetch<Registry>(REGISTRY_URL, {
     parseResponse: async (response) => response.json() as Promise<Registry>,
@@ -107,6 +116,19 @@ export default function Command() {
       onSearchTextChange={setSearchText}
       isLoading={registryLoading}
       filtering={false}
+      searchBarAccessory={
+        <Grid.Dropdown
+          tooltip="Package Manager"
+          storeValue
+          defaultValue="pnpm"
+          onChange={(val) => setPackageManager(val as PackageManager)}
+        >
+          <Grid.Dropdown.Item title="pnpm" value="pnpm" />
+          <Grid.Dropdown.Item title="npm" value="npm" />
+          <Grid.Dropdown.Item title="yarn" value="yarn" />
+          <Grid.Dropdown.Item title="bun" value="bun" />
+        </Grid.Dropdown>
+      }
     >
       {filteredIcons.map((name) => (
         <Grid.Item
@@ -114,7 +136,7 @@ export default function Command() {
           title={name}
           content={{ source: getIconSource(name), tintColor: Color.PrimaryText }}
           keywords={[name]}
-          actions={<IconActions name={name} />}
+          actions={<IconActions name={name} packageManager={packageManager} />}
         />
       ))}
     </Grid>
